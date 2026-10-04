@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Seberapa Kenal Alief?</title>
+<style>
+/* ===== LEADERBOARD KEREN ===== */
+
+.leaderboard-card {
+    background: #101010;
+    border: 2px solid #ff2b8a;
+    border-radius: 20px;
+    padding: 20px;
+    margin-top: 20px;
+    box-shadow: 0 0 25px rgba(255, 43, 138, 0.35);
+}
+
+.leaderboard-title {
+    text-align: center;
+    font-size: 24px;
+    color: #ff4fa3;
+    margin-bottom: 15px;
+}
+
+.leaderboard-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #181818;
+    border-radius: 14px;
+    padding: 12px 15px;
+    margin: 8px 0;
+    border: 1px solid #333;
+}
+
+.leaderboard-rank {
+    font-size: 20px;
+    font-weight: bold;
+}
+
+.leaderboard-name {
+    flex: 1;
+    margin-left: 10px;
+    color: white;
+}
+
+.leaderboard-score {
+    color: #00eaff;
+    font-weight: bold;
+}
+
+.leaderboard-close {
+    width: 100%;
+    margin-top: 15px;
+    background: #ff2b8a;
+}
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  font-family: Arial, sans-serif;
+  background: #050505;
+  color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.container {
+  width: 92%;
+  max-width: 430px;
+  background: #101010;
+  border: 1px solid #8b0000;
+  border-radius: 22px;
+  padding: 25px 20px;
+  box-shadow: 0 0 35px rgba(139,0,0,.4);
+}
+
+.hidden {
+  display: none;
+}
+
+.logo {
+  font-size: 70px;
+  text-align: center;
+  margin-bottom: 10px;
+}
+
+h1 {
+  text-align: center;
+  margin: 10px 0;
+}
+
+.subtitle {
+  text-align: center;
+  color: #aaa;
+  line-height: 1.5;
+}
+
+button {
+  width: 100%;
+  padding: 15px;
+  margin-top: 12px;
+  border: none;
+  border-radius: 12px;
+  background: #8b0000;
+  color: white;
+  font-size: 16px;
+  font-weight: bold;
+}
+
+button:active {
+  transform: scale(.97);
+}
+
+.progress {
+  color: #aaa;
+  font-size: 14px;
+  margin-bottom: 15px;
+}
+
+.question {
+  font-size: 21px;
+  font-weight: bold;
+  line-height: 1.4;
+  margin-bottom: 20px;
+}
+
+.answer {
+  background: #1b1b1b;
+  border: 1px solid #333;
+  margin: 10px 0;
+  text-align: left;
+}
+
+.answer:hover {
+  background: #300000;
+}
+
+.result {
+  text-align: center;
+}
+
+.score {
+  font-size: 50px;
+  font-weight: bold;
+  color: #ff3333;
+  margin: 20px 0;
+}
+
+.small {
+  color: #888;
+  font-size: 13px;
+  text-align: center;
+  margin-top: 20px;
+}
+  .admin-btn {
+    position: fixed;
+    top: 15px;
+    right: 15px;
+    width: 45px;
+    height: 45px;
+    padding: 0;
+    border: none;
+    border-radius: 50%;
+    background: #ff2b5f;
+    color: white;
+    font-size: 20px;
+    z-index: 9999;
+    box-shadow: 0 0 15px rgba(255, 43, 95, 0.5);
+}
+</style>  
+</head>
+
+<body>
+
+<div class="container">
+
+  <div id="home">
+
+    <div class="logo">💔</div>
+
+    <h1>Seberapa Kenal Alief?</h1>
+
+    <p class="subtitle">
+        Hanya orang yang benar-benar mengenal Alief
+        yang bisa mendapatkan skor sempurna.
+    </p>
+
+    <div class="name-box">
+    <label for="playerName">👋 Siapa namamu?</label>
+
+    <input
+        type="text"
+        id="playerName"
+        placeholder="Masukkan nama kamu..."
+        maxlength="20"
+    >
+</div>
+
+<button onclick="mulaiQuiz()">
+    ✨ MULAI QUIZ
+</button>
+    
+<button onclick="lihatLeaderboard()">
+    🏆 LEADERBOARD
+</button>
+    
+<p class="small">
+    💗 Nama kamu akan digunakan untuk skor quiz
+</p>
+
+</div>
+
+
+  <!-- HALAMAN QUIZ -->
+  <div id="quiz" class="hidden">
+
+    <div class="progress" id="progress">
+      Pertanyaan 1 dari 5
+    </div>
+
+    <div class="question" id="question">
+      Pertanyaan
+    </div>
+
+    <div id="answers"></div>
+
+  </div>
+
+
+  <!-- HALAMAN HASIL -->
+  <div id="result" class="hidden result">
+
+    <div class="logo">🔥</div>
+
+    <h1>HASIL KAMU</h1>
+
+    <div class="score" id="score">
+      0 / 5
+    </div>
+
+    <p id="message"></p>
+
+    <button onclick="ulangQuiz()">
+      ULANGI QUIZ
+    </button>
+
+  </div>
+
+</div>
+
+
+<script>
+const questions = [
+  {
+    question: "Alief lahir tahun berapa?",
+    answers: ["2010", "2011", "2014", "2012"],
+    correct: 1
+  },
+  {
+    question: "Alief suka apa kalau di rumah?",
+    answers: ["Main dan makan", "Belajar", "Rebahan", "Tidur"],
+    correct: 0
+  },
+  {
+    question: "Alief ganteng ga?",
+    answers: ["iyaa", "biasa aja", "ganteng banget", "okey la"],
+    correct: 2
+  },
+  {
+    question: "Apa warna favorit Alief?",
+    answers: ["Merah", "Biru", "Hijau", "Hitam"],
+    correct: 1
+  },
+  {
+    question: "Apa makanan yang paling disukai Alief?",
+    answers: ["Ramen", "Nasi goreng", "Pizza", "Burger"],
+    correct: 1
+  },
+  {
+    question: "Kalau sedang bosan, Alief biasanya suka?",
+    answers: ["Main game", "Belajar", "Bersih-bersih", "Membaca"],
+    correct: 0
+  },
+  {
+    question: "game apa yang sering alief main?",
+    answers: ["ml", "ff", "pubg", "pou"],
+    correct: 0
+  },
+  {
+  question: "Menurut kamu, Alief itu keren ga?",
+  answers: ["Iya, sangat keren 😎", "Lumayan", "Biasa saja", "Tidak"],
+  correct: 1
+},
+{
+  question: "Alief lebih suka bermain atau belajar?",
+  answers: ["Bermain", "Belajar", " satu dan dua", "Tidur"],
+  correct: 2
+},
+{
+    question: "Alief itu pinter ga?",
+    answers: ["Sangat pinter 🔥", "Lumayan", "Sedikit", "Tidak pinter"],
+    correct: 0
+},
+{
+    question: "Seberapa kenal kamu dengan Alief dan Sasuke?",
+    answers: ["Sangat kenal 🔥", "Lumayan", "Sedikit", "Tidak kenal"],
+    correct: 0
+}
+]; 
+
+    function mulaiQuiz() {
+
+    const inputNama = document.getElementById("playerName");
+
+    if (!inputNama) {
+        alert("Kolom nama tidak ditemukan!");
+        return;
+    }
+
+    playerName = inputNama.value.trim();
+
+    if (playerName === "") {
+        alert("Masukkan nama kamu dulu ya! 💗");
+        return;
+    }
+
+    currentQuestion = 0;
+    score = 0;
+
+    document.getElementById("home").classList.add("hidden");
+    document.getElementById("result").classList.add("hidden");
+    document.getElementById("quiz").classList.remove("hidden");
+
+    tampilkanPertanyaan();
+}
+
+
+function tampilkanPertanyaan() {
+
+  const q = questions[currentQuestion];
+
+  document.getElementById("progress").innerText =
+    "Pertanyaan " +
+    (currentQuestion + 1) +
+    " dari " +
+    questions.length;
+
+  document.getElementById("question").innerText =
+    q.question;
+
+  const answersDiv =
+    document.getElementById("answers");
+
+  answersDiv.innerHTML = "";
+
+  q.answers.forEach((answer, index) => {
+
+    const button = document.createElement("button");
+
+    button.innerText = answer;
+
+    button.className = "answer";
+
+    button.onclick = function() {
+      pilihJawaban(index);
+    };
+
+    answersDiv.appendChild(button);
+
+  });
+
+}
+
+
+function pilihJawaban(index) {
+
+  const benar =
+    questions[currentQuestion].correct;
+
+  if (index === benar) {
+    score++;
+  }
+
+  currentQuestion++;
+
+  if (currentQuestion < questions.length) {
+
+    tampilkanPertanyaan();
+
+  } else {
+
+    tampilkanHasil();
+
+  }
+
+}
+
+
+function tampilkanHasil() {
+
+  document.getElementById("quiz")
+    .classList.add("hidden");
+
+  document.getElementById("result")
+    .classList.remove("hidden");
+
+  document.getElementById("score").innerText =
+    score + " / " + questions.length;
+
+  let message = "";
+
+  const persen =
+    (score / questions.length) * 100;
+
+  if (persen === 100) {
+
+    message =
+      "👑 TRUE FRIEND! Kamu benar-benar mengenal Alief.";
+
+  } else if (persen >= 80) {
+
+    message =
+      "🔥 Gila, kamu sangat mengenal Alief!";
+
+  } else if (persen >= 60) {
+
+    message =
+      "😎 Lumayan dekat dengan Alief.";
+
+  } else if (persen >= 40) {
+
+    message =
+      "🙂 Masih banyak yang harus kamu ketahui.";
+
+  } else {
+
+    message =
+      "🙃 Kamu sebenarnya kenal Alief nggak?";
+
+  }
+
+ document.getElementById("message").innerText =
+    message;
+
+simpanLeaderboard();
+}
+
+
+function ulangQuiz() {
+
+  document.getElementById("result")
+    .classList.add("hidden");
+
+  document.getElementById("home")
+    .classList.remove("hidden");
+
+}
+
+// ===== LEADERBOARD =====
+function simpanLeaderboard() {
+  let data = JSON.parse(localStorage.getItem("leaderboardAlief")) || [];
+
+  data.push({
+    nama: playerName,
+    skor: score,
+    total: questions.length
+  });
+
+  data.sort((a, b) => b.skor - a.skor);
+  data = data.slice(0, 10);
+
+  localStorage.setItem("leaderboardAlief", JSON.stringify(data));
+}
+  function lihatLeaderboard() {
+    let data = JSON.parse(localStorage.getItem("leaderboardAlief")) || [];
+
+    let teks = `
+        <div class="leaderboard-card">
+            <div class="leaderboard-title">
+                🏆 LEADERBOARD ALIEF
+            </div>
+    `;
+
+    if (data.length === 0) {
+        teks += `
+            <p style="text-align:center;">
+                Belum ada pemain 💗
+            </p>
+        `;
+    } else {
+        data.forEach((p, i) => {
+            let emoji = ["🥇", "🥈", "🥉"][i] || "🏅";
+
+            teks += `
+                <div class="leaderboard-item">
+                    <span class="leaderboard-rank">
+                        ${emoji} ${i + 1}
+                    </span>
+
+                    <span class="leaderboard-name">
+                        ${p.nama}
+                    </span>
+
+                    <span class="leaderboard-score">
+                        ${p.skor}/${p.total}
+                    </span>
+                </div>
+            `;
+        });
+    }
+
+    teks += `
+            <button class="leaderboard-close" onclick="tutupLeaderboard()">
+                TUTUP
+            </button>
+        </div>
+    `;
+
+    let popup = document.createElement("div");
+
+    popup.id = "leaderboardPopup";
+
+    popup.style.position = "fixed";
+    popup.style.inset = "0";
+    popup.style.background = "rgba(0,0,0,0.75)";
+    popup.style.display = "flex";
+    popup.style.alignItems = "center";
+    popup.style.justifyContent = "center";
+    popup.style.padding = "20px";
+    popup.style.zIndex = "9999";
+
+    popup.innerHTML = teks;
+
+    document.body.appendChild(popup);
+}
+
+function tutupLeaderboard() {
+    let popup = document.getElementById("leaderboardPopup");
+
+    if (popup) {
+        popup.remove();
+    }
+}
+function loginAdmin() {
+    const username = prompt("👤 Username Admin:");
+    const password = prompt("🔑 Password Admin:");
+
+    if (username === "admin" && password === "12345") {
+        alert("✅ Login berhasil! Selamat datang Admin 👑");
+    } else {
+        alert("❌ Username atau password salah!");
+    }
+}
+</script>
+  
+<!-- ADMIN LOGIN -->
+<!-- kode admin akan kita masukkan di sini -->
+  <button class="admin-btn" onclick="loginAdmin()">
+    🔐
+</button>
+</body>
+</html>
